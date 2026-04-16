@@ -19,13 +19,13 @@ This tool bridges the gap between deep learning research and clinical utility. B
 * **Model:** U-Net with a ResNet34 encoder, trained for 20 epochs to a validation accuracy of ~93.5%.
 * **Deployment:** Python-based Streamlit dashboard optimized for high-resolution clinical photos.
 
-## 🛠️ Installation & Usage
+## Installation & Usage
 1. Clone the repository.
 2. Install dependencies: `pip install -r requirements.txt`
 3. Ensure `NAION_Risk_Unet_v1.pth` is in the root directory.
 4. Run: `streamlit run naion_app.py`
 
-## ⚖️ License
+## License
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ### Model Weights
