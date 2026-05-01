@@ -64,19 +64,48 @@ def calculate_vessel_density(image_rgb, mask_disc):
     
     return (vessel_pixels / total_pixels) if total_pixels > 0 else 0
 
+import streamlit as st
+import torch
+import cv2
+import numpy as np
+import segmentation_models_pytorch as smp
+from PIL import Image
+from huggingface_hub import hf_hub_download
+import os
+
 # --- 2. UI SETUP & MODEL LOADING ---
 
 st.set_page_config(page_title="NAION AI Support", layout="wide")
 st.title("👁️ NAION-Risk: AI Decision Support")
-st.markdown("Automated anatomical and vascular profiling for Optic Nerve Head analysis.")
 
 @st.cache_resource
 def load_ai_model():
-    model = smp.Unet(encoder_name="resnet34", encoder_weights=None, in_channels=3, classes=2)
-    model.load_state_dict(torch.load("NAION_Risk_Unet_v1.pth", map_location='cpu'))
-    model.eval()
-    return model
+    REPO_ID = "jani2904/NAION-Risk-Analyzer" 
+    FILENAME = "NAION_Risk_Unet_v1.pth"
+    
+    try:
+        # Download from Hugging Face
+        model_path = hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
+        
+        # Initialize architecture
+        model = smp.Unet(
+            encoder_name="resnet34", 
+            encoder_weights=None, 
+            in_channels=3, 
+            classes=2
+        )
+        
+        # Load weights
+        state_dict = torch.load(model_path, map_location='cpu', weights_only=False)
+        model.load_state_dict(state_dict)
+        model.eval()
+        return model
+        
+    except Exception as e:
+        st.error(f"Critical Error loading model from Hugging Face: {e}")
+        return None
 
+# Load the model once
 model = load_ai_model()
 
 from huggingface_hub import hf_hub_download # Ensure this import is at the top
