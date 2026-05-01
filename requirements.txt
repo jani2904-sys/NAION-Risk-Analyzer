@@ -1,8 +1,7 @@
-streamlit 
-torch 
-torchvision 
-opencv-python 
-segmentation-models-pytorch 
+streamlit
+torch
+torchvision
+segmentation-models-pytorch
 huggingface_hub
 opencv-python-headless
 numpy
