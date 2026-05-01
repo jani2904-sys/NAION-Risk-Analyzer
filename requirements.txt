@@ -3,3 +3,4 @@ torch
 torchvision 
 opencv-python 
 segmentation-models-pytorch 
+huggingface_hub
