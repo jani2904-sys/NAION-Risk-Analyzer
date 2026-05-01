@@ -4,3 +4,6 @@ torchvision
 opencv-python 
 segmentation-models-pytorch 
 huggingface_hub
+opencv-python-headless
+numpy
+Pillow
