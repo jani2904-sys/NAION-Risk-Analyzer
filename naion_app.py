@@ -79,6 +79,31 @@ def load_ai_model():
 
 model = load_ai_model()
 
+from huggingface_hub import hf_hub_download
+import os
+
+@st.cache_resource
+def load_ai_model():
+    # 1. Configuration - Replace with your HF details
+    REPO_ID = "jani2904/NAION-Risk-Analyzer" 
+    FILENAME = "NAION_Risk_Unet_v1.pth"
+    
+    # 2. Download from Hugging Face
+    with st.spinner("Fetching AI Weights from Hugging Face..."):
+        model_path = hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
+    
+    # 3. Initialize and Load
+    model = smp.Unet(
+        encoder_name="resnet34", 
+        encoder_weights=None, 
+        in_channels=3, 
+        classes=2
+    )
+    
+    # Load weights (hf_hub_download returns the local path to the cached file)
+    model.load_state_dict(torch.load(model_path, map_location='cpu'))
+    model.eval()
+    return model
 # --- 3. SIDEBAR & FILE UPLOAD ---
 
 uploaded_file = st.sidebar.file_uploader("Upload Fundus Image", type=['jpg', 'png', 'jpeg'])
