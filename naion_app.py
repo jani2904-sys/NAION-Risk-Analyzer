@@ -115,20 +115,19 @@ import segmentation_models_pytorch as smp
 
 @st.cache_resource
 def load_ai_model():
-    # 1. Your specific repository details
     REPO_ID = "jani2904/NAION-Risk-Analyzer" 
     FILENAME = "NAION_Risk_Unet_v1.pth"
     
     try:
-        # 2. Add repo_type="dataset" because HF sees this as a Dataset repo
+        # 1. The CRITICAL addition is repo_type="dataset"
         with st.spinner("Downloading weights from Hugging Face Dataset..."):
             model_path = hf_hub_download(
                 repo_id=REPO_ID, 
                 filename=FILENAME, 
-                repo_type="dataset"  # <--- CRITICAL ADDITION
+                repo_type="dataset"  # This tells HF to look in Datasets
             )
         
-        # 3. Setup the architecture
+        # 2. Setup the architecture
         model = smp.Unet(
             encoder_name="resnet34", 
             encoder_weights=None, 
@@ -136,7 +135,7 @@ def load_ai_model():
             classes=2
         )
         
-        # 4. Load weights
+        # 3. Load weights
         state_dict = torch.load(model_path, map_location='cpu', weights_only=False)
         model.load_state_dict(state_dict)
         model.eval()
@@ -144,7 +143,6 @@ def load_ai_model():
         return model
         
     except Exception as e:
-        # This will now catch if the filename is slightly different
         st.error(f"⚠️ Model Loading Failed: {e}")
         return None
 # --- 3. SIDEBAR & FILE UPLOAD ---
