@@ -124,7 +124,7 @@ def load_ai_model():
             model_path = hf_hub_download(
                 repo_id=REPO_ID, 
                 filename=FILENAME, 
-                repo_type="dataset"  # This tells HF to look in Datasets
+                repo_type="Dataset"  # This tells HF to look in Datasets
             )
         
         # 2. Setup the architecture
