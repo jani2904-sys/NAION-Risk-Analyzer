@@ -79,29 +79,39 @@ def load_ai_model():
 
 model = load_ai_model()
 
-from huggingface_hub import hf_hub_download
-import os
+from huggingface_hub import hf_hub_download # Ensure this import is at the top
+import torch
+import streamlit as st
+import segmentation_models_pytorch as smp
 
 @st.cache_resource
 def load_ai_model():
     REPO_ID = "jani2904/NAION-Risk-Analyzer" 
     FILENAME = "NAION_Risk_Unet_v1.pth"
     
-    # 1. This downloads the file and returns the ACTUAL path on the Streamlit server
-    model_path = hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
+    try:
+        # 1. Download the file from HF
+        model_path = hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
+        
+        # 2. Initialize architecture
+        model = smp.Unet(
+            encoder_name="resnet34", 
+            encoder_weights=None, 
+            in_channels=3, 
+            classes=2
+        )
+        
+        # 3. Load state dict with map_location and weights_only=False 
+        # (weights_only=False is needed for older .pth files in newer Torch versions)
+        state_dict = torch.load(model_path, map_location='cpu', weights_only=False)
+        model.load_state_dict(state_dict)
+        
+        model.eval()
+        return model
     
-    model = smp.Unet(
-        encoder_name="resnet34", 
-        encoder_weights=None, 
-        in_channels=3, 
-        classes=2
-    )
-    
-    # 2. CRITICAL CHANGE: Use model_path variable, NOT the filename string "NAION_..."
-    model.load_state_dict(torch.load(model_path, map_location='cpu'))
-    
-    model.eval()
-    return model
+    except Exception as e:
+        st.error(f"Critical Error loading model from Hugging Face: {e}")
+        return None
 # --- 3. SIDEBAR & FILE UPLOAD ---
 
 uploaded_file = st.sidebar.file_uploader("Upload Fundus Image", type=['jpg', 'png', 'jpeg'])
