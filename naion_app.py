@@ -117,10 +117,15 @@ import segmentation_models_pytorch as smp
 def load_ai_model():
     REPO_ID = "jani2904/NAION-Risk-Analyzer" 
     FILENAME = "NAION_Risk_Unet_v1.pth"
+    hf_token = st.secrets["HF_TOKEN"]
     
     try:
         # 1. Download the file from HF
-        model_path = hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
+        model_path = hf_hub_download(
+        repo_id="jani2904/NAION-Risk-Analyzer", 
+        filename="NAION_Risk_Unet_v1.pth",
+        token=hf_token
+    )
         
         # 2. Initialize architecture
         model = smp.Unet(
