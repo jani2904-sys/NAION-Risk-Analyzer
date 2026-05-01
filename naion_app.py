@@ -115,21 +115,20 @@ import segmentation_models_pytorch as smp
 
 @st.cache_resource
 def load_ai_model():
+    # 1. Your specific repository details
     REPO_ID = "jani2904/NAION-Risk-Analyzer" 
     FILENAME = "NAION_Risk_Unet_v1.pth"
     
     try:
-        # Pull the token from the Secrets you just saved
-        # If this line fails, it means the secret isn't named HF_TOKEN in the dashboard
-        hf_token = st.secrets["HF_TOKEN"]
-        
-        with st.spinner("Authenticating with Hugging Face..."):
+        # 2. Add repo_type="dataset" because HF sees this as a Dataset repo
+        with st.spinner("Downloading weights from Hugging Face Dataset..."):
             model_path = hf_hub_download(
                 repo_id=REPO_ID, 
-                filename=FILENAME,
-                token=hf_token  # Pass the token here
+                filename=FILENAME, 
+                repo_type="dataset"  # <--- CRITICAL ADDITION
             )
         
+        # 3. Setup the architecture
         model = smp.Unet(
             encoder_name="resnet34", 
             encoder_weights=None, 
@@ -137,15 +136,16 @@ def load_ai_model():
             classes=2
         )
         
-        # Load the weights
+        # 4. Load weights
         state_dict = torch.load(model_path, map_location='cpu', weights_only=False)
         model.load_state_dict(state_dict)
         model.eval()
+        
         return model
         
     except Exception as e:
-        # This will tell us if the problem is the Token name or the Repo ID
-        st.error(f"Critical Error: {e}")
+        # This will now catch if the filename is slightly different
+        st.error(f"⚠️ Model Loading Failed: {e}")
         return None
 # --- 3. SIDEBAR & FILE UPLOAD ---
 
