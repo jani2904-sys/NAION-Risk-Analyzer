@@ -119,15 +119,13 @@ def load_ai_model():
     FILENAME = "NAION_Risk_Unet_v1.pth"
     
     try:
-        # 1. The CRITICAL addition is repo_type="dataset"
-        with st.spinner("Downloading weights from Hugging Face Dataset..."):
-            model_path = hf_hub_download(
-                repo_id=REPO_ID, 
-                filename=FILENAME, 
-                repo_type="Dataset"  # This tells HF to look in Datasets
-            )
+        # 1. You MUST specify repo_type="dataset" because your HF repo is a Dataset
+        model_path = hf_hub_download(
+            repo_id=REPO_ID, 
+            filename=FILENAME, 
+            repo_type="dataset"
+        )
         
-        # 2. Setup the architecture
         model = smp.Unet(
             encoder_name="resnet34", 
             encoder_weights=None, 
@@ -135,16 +133,17 @@ def load_ai_model():
             classes=2
         )
         
-        # 3. Load weights
+        # 2. Use the model_path variable
         state_dict = torch.load(model_path, map_location='cpu', weights_only=False)
         model.load_state_dict(state_dict)
         model.eval()
-        
         return model
         
     except Exception as e:
-        st.error(f"⚠️ Model Loading Failed: {e}")
+        # This is the error you are seeing in the middle of the app
+        st.error(f"Critical Error: {e}")
         return None
+
 # --- 3. SIDEBAR & FILE UPLOAD ---
 
 uploaded_file = st.sidebar.file_uploader("Upload Fundus Image", type=['jpg', 'png', 'jpeg'])
