@@ -85,34 +85,31 @@ import segmentation_models_pytorch as smp
 
 @st.cache_resource
 def load_ai_model():
-    REPO_ID = "jani2904/NAION-Risk-Analyzer" 
-    FILENAME = "NAION_Risk_Unet_v1.pth"
-    
-    try:
-        # 1. You MUST specify repo_type="dataset" because your HF repo is a Dataset
-        model_path = hf_hub_download(
-            repo_id=REPO_ID, 
-            filename=FILENAME, 
-            repo_type="dataset"
-        )
+    model_path = hf_hub_download(
+        repo_id="jani2904/NAION-Risk-Analyzer",
+        filename="NAION_Risk_Unet_v1.pth",
+        repo_type="dataset"
+    )
+
+    model = smp.Unet(
+        encoder_name="resnet34",
+        encoder_weights=None,
+        in_channels=3,
+        classes=2
+    )
+
+    state_dict = torch.load(model_path, map_location="cpu")
+    model.load_state_dict(state_dict)
+    model.eval()
+    return model
+
+
+# IMPORTANT: load model globally
+model = load_ai_model()
+
+if model is None:
+    st.stop()
         
-        model = smp.Unet(
-            encoder_name="resnet34", 
-            encoder_weights=None, 
-            in_channels=3, 
-            classes=2
-        )
-        
-        # 2. Use the model_path variable
-        state_dict = torch.load(model_path, map_location='cpu', weights_only=False)
-        model.load_state_dict(state_dict)
-        model.eval()
-        return model
-        
-    except Exception as e:
-        # This is the error you are seeing in the middle of the app
-        st.error(f"Critical Error: {e}")
-        return None
 
 # --- 3. SIDEBAR & FILE UPLOAD ---
 
