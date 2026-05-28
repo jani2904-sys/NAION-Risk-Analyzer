@@ -1,3 +1,5 @@
+This project is dedicated to the public domain under CC0 1.0 Universal. You can copy, modify, and distribute the work, even for commercial purposes, all without asking permission.
+
 # NAION-Risk-Analyzer
 Deep Learning (U-Net) tool for automated optic nerve head segmentation and NAION risk profiling via anatomical biomarkers.
 
