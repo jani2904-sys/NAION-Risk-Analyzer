@@ -28,7 +28,7 @@ This tool bridges the gap between deep learning research and clinical utility. B
 4. Run: `streamlit run naion_app.py`
 
 ## License
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the CCO 1.0 Universal License. See `LICENSE` for more information.
 
 ### Model Weights
 The pre-trained weights for this project are hosted on **Hugging Face**:
